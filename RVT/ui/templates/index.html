@@ -1,0 +1,37 @@
+<!-- Now create a flask template with tailwind css beautiful for input as vehicle image -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Image</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 p-4 md:p-0 md:py-4 md:px-8 md:mx-8 min-h-screen">
+    <!-- I want The input form on the left side of the page in desktop and top in mobile and results on the right side in desktop bottom in mobile  -->
+    <div class="flex flex-col md:flex-row items-center justify-center h-screen">
+        <div class="w-full md:w-1/2">
+            <form action="/" method="post" enctype="multipart/form-data">
+                <div class="flex flex-col items-center justify-center">
+                    <label for="image" class="text-2xl font-bold">Upload Vehicle Image</label>
+                    <input type="file" name="image" id="image" class="p-2 border-2 border-gray-300 rounded-lg mt-2">
+                    <!-- Or with horizontal line -->
+                    <hr class="w-full mt-2">
+                    <label for="image" class="text-2xl font-bold mt-2">Or Enter Vehicle Number</label>
+                    <input type="text" name="vehicle_number" id="vehicle_number"
+                        class="p-2 border-2 border-gray-300 rounded-lg mt-2">
+
+
+
+                    <button type="submit" class="bg-blue-500 text-white p-2 rounded-lg mt-2">Predict</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>

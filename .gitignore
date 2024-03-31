@@ -1,0 +1,7 @@
+# RVT
+RVT/datasets/Vehicle Registration Plates.v2-licenseplatedatasetv1.yolov8.zip
+RVT/models/*
+RVT/yolov8*
+RVT/vehicle_tracking/net_19.pth
+RVT/vehicle_tracking/opts.yaml
+RVT/vehicle_tracking/ReId/tool.zip
