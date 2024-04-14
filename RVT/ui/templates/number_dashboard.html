@@ -139,6 +139,26 @@
                 width: 50%;
             }
         }
+
+        #updated {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .card {
+            flex: 0 0 auto;
+            width: 200px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+        }
+
+        .card img {
+            width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 
@@ -153,8 +173,10 @@
                     <!-- Base64 image is passed -->
 
 
-                    <img src="data:image/png;base64,{{ image }}" alt="Vehicle Image" class="w-full" />
-                    <h2 class="text-xl font-bold mt-2">Predicted Vehicle: {{ label }}</h2>
+
+                    <h3>
+                        Vehicle Number : {{ vehicle_number }}
+                    </h3>
                 </div>
             </div>
         </div>
@@ -162,20 +184,10 @@
         <div class="w-full">
             <!-- Live Tracking Data -->
             <div class="container px-1 px-md-4 py-5 mx-auto">
-                <div class="card">
-                    <div class="row d-flex justify-content-between px-3 top">
-                        <div class="d-flex">
-                            <h5>ORDER <span class="text-primary font-weight-bold">Number</span>
-                            </h5>
-                        </div>
-                        <div class="d-flex flex-column text-sm-right">
-                            <p class="mb-0">Expected Arrival <span>01/12/19</span></p>
-                            <p>USPS <span class="font-weight-bold">}</span></p>
-                        </div>
-                    </div>
-                    <!-- Add class 'active' to progress -->
-                    <div id="updated" class="row d-flex justify-content-center">
-                    </div>
+                <div class="w-full" id="updated">
+
+
+
                 </div>
             </div>
 
@@ -186,44 +198,62 @@
 
 
             let socket = new WebSocket("ws://localhost:5001");
+            const cameras = [];
 
             socket.onopen = function (e) {
                 console.log("[open] Connection established");
                 console.log("Sending to server");
-                socket.send("start_searching_with_number");
+                socket.send(JSON.stringify({
+                    "action": "start_searching_with_number",
+                    "number": "{{ vehicle_number }}"
+                }));
             };
 
             socket.onmessage = function (event) {
                 const data = JSON.parse(event.data);
                 const message = JSON.parse(data.message);
                 const base64_image = message.output_image;
-                // create a table with time stamp and image, with place and vehicle
-                const con = document.getElementById("updated");
-                const div = document.createElement("div");
-                div.innerHTML = `
-                <div class="col-12  col-md-6 col-lg-4 col-xl-3">
-                    <div class="card">
-                        <div class="row d-flex
-                            justify-content-between px-3 top">
-                            <div class="d-flex">
-                                <h5>ORDER <span class="text-primary font-weight-bold">Number</span>
-                                </h5>
-                            </div>
-                            <div class="d-flex flex-column text-sm-right">
-                                <p class="mb-0">Expected Arrival <span>01/12/19</span></p>
-                                <p>USPS <span class="font-weight-bold">}</span></p>
-                            </div>
-                        </div>
-                        <div class="row d-flex
+                const base64_plate = message.output_plate;
+                const similarity = message.similarity;
+                const time = new Date().toLocaleTimeString();
+                const date = new Date().toLocaleDateString();
 
-                            justify-content-center">
-                            <div class="col-12">
-                                <img src="data:image/png;base64,${base64_image}" alt="Vehicle Image" class="w-full" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                `;
+                if (!cameras.includes(message.camera_id) && message.camera_id !== undefined && message.camera_id !== null && message.camera_id !== "" && message.camera_id !== "null" && message.camera_id !== "undefined" && message.camera_id !== "NaN" && message.camera_id !== "NaN") {
+                    cameras.push(message.camera_id);
+                    const div = document.createElement("div");
+                    div.className = "icon-content w-full row";
+                    div.style = "display: flex; flex-direction: column; align-items: center; justify-content: center;overflow-x: auto;";
+                    div.innerHTML = `
+                     
+                     <div id="updated${message.camera_id}" class="row d-flex flex-nowrap justify-content-center">
+                     </div>
+                     `;
+
+                    const h2 = document.createElement('h2')
+                    h2.innerHTML = `Camera ID: ${message.camera_id}`;
+                    document.getElementById("updated").appendChild(h2);
+
+
+
+
+                    document.getElementById("updated").appendChild(div);
+                }
+
+                // create a table with time stamp and image, with place and vehicle
+                const con = document.getElementById("updated" + message.camera_id);
+                const div = document.createElement("div");
+                div.className = "card"; // add a class to style the div
+                div.innerHTML = `
+         <img src="data:image/png;base64,${base64_image}" alt="Image">
+         <p>Time: ${time}</p>
+         <p>Date: ${date}</p>
+         <p>Similarity: ${similarity}</p>
+         <img src="data:image/png;base64,${base64_plate}" alt="Plate">
+ 
+ 
+ `;
+
+
                 con.appendChild(div);
 
 
